@@ -29,7 +29,7 @@ export const Db = {
       if (error) throw error;
       if (!data) return null;
       
-      const memberships = await this.getUserMemberships(data.id);
+      const memberships = await Db.getUserMemberships(data.id);
       
       return {
         id: data.id,
@@ -57,7 +57,7 @@ export const Db = {
       if (error) throw error;
       if (!data) return null;
       
-      const memberships = await this.getUserMemberships(data.id);
+      const memberships = await Db.getUserMemberships(data.id);
       
       return {
         id: data.id,
@@ -122,7 +122,7 @@ export const Db = {
   },
 
   async joinRoom(roomCode: string, userId: string, role: UserRole): Promise<FamilyRoom | null> {
-    const room = await this.getRoomByCode(roomCode);
+    const room = await Db.getRoomByCode(roomCode);
     if (!room) return null;
 
     const { data: existing } = await supabase

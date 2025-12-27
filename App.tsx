@@ -28,44 +28,55 @@ const App: React.FC = () => {
   useEffect(() => {
     const checkSession = async () => {
       setIsLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        const userId = session.user.id;
-        const cloudUser = await Db.getUserById(userId);
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (cloudUser) {
-          setUser(cloudUser);
-          setLang(cloudUser.language);
-          const memberships = await Db.getUserMemberships(cloudUser.id);
-          setMyMemberships(memberships);
+        if (sessionError) throw sessionError;
 
-          if (cloudUser.activeRoomId && memberships.some(m => m.roomId === cloudUser.activeRoomId)) {
-            setStep('app');
-          } else if (memberships.length > 0) {
-            setStep('selectRoom');
+        if (session?.user) {
+          const userId = session.user.id;
+          const cloudUser = await Db.getUserById(userId);
+          
+          if (cloudUser) {
+            setUser(cloudUser);
+            setLang(cloudUser.language);
+            const memberships = await Db.getUserMemberships(cloudUser.id);
+            setMyMemberships(memberships);
+
+            if (cloudUser.activeRoomId && memberships.some(m => m.roomId === cloudUser.activeRoomId)) {
+              setStep('app');
+            } else if (memberships.length > 0) {
+              setStep('selectRoom');
+            } else {
+              setStep('room');
+            }
           } else {
-            setStep('room');
+            setStep('username');
           }
         } else {
-          setStep('username');
+          setStep('lang');
         }
-      } else {
-        setStep('lang');
+      } catch (err) {
+        console.error("Session check failed:", err);
+        setStep('lang'); // Fallback to language selection on error
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) checkSession();
+      // If we logout or session clears, reset to lang
+      if (!session) {
+        setStep('lang');
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const t = TRANSLATIONS[lang];
+  const t = TRANSLATIONS[lang] || TRANSLATIONS[Language.EN];
 
   const handleLanguageSelect = (l: Language) => {
     setLang(l);
@@ -381,7 +392,7 @@ const App: React.FC = () => {
           <h2 className="text-3xl font-black mb-10">Your Families</h2>
           <div className="space-y-4">
             {myMemberships.map((m) => (
-              <button key={m.id} onClick={() => handleSelectRoom(m.roomId)} className="w-full bg-white p-8 rounded-[2.5rem] shadow-sm border-2 border-slate-100 flex items-center justify-between active:scale-95 transition-all">
+              <button key={m.id || m.roomId} onClick={() => handleSelectRoom(m.roomId)} className="w-full bg-white p-8 rounded-[2.5rem] shadow-sm border-2 border-slate-100 flex items-center justify-between active:scale-95 transition-all">
                 <div className="text-left">
                   <p className="font-black text-xl mb-1">{m.roomName}</p>
                   <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest">{m.role}</span>

@@ -58,17 +58,25 @@
     </style>
 
     <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@^19.2.3",
-        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-        "react/": "https://esm.sh/react@^19.2.3/",
-        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.7"
-      }
-    }
-    </script>
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom": "https://esm.sh/react-dom@^19.2.3",
+    "react-dom/client": "https://esm.sh/react-dom@^19.2.3/client",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.7",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
 </head>
 <body class="antialiased">
-    <div id="root"></div>
+    <div id="root">
+        <!-- Fallback if JS fails -->
+        <div class="h-screen flex items-center justify-center bg-white p-10 text-center">
+            <p class="text-slate-400 font-bold">Loading FAM ROOM...</p>
+        </div>
+    </div>
+    <script type="module" src="index.tsx"></script>
 </body>
 </html>
