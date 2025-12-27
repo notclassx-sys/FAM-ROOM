@@ -1,0 +1,16 @@
+{
+  "name": "FAM ROOM",
+  "short_name": "FamRoom",
+  "description": "Family Elderly Care & Medicine Reminders",
+  "package_name": "com.famroom.app",
+  "version": "1.0.0",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone",
+    "camera"
+  ],
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb"
+}
